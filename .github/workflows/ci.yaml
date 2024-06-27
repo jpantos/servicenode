@@ -51,6 +51,7 @@ jobs:
       - name: Create local signer_key
         run: |
           ssh-keygen -t ed25519 -f signer_key.pem -N ''
+          chmod 777 signer_key.pem
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3.0.0
