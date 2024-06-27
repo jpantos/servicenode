@@ -88,6 +88,17 @@ jobs:
           make docker ARGS="-d --no-build --wait"
           docker compose down
 
+      - name: Dump service node logs
+        if: always()
+        run: |
+          docker compose logs || true
+
+      - name: Dump ethereum contract logs
+        if: always()
+        run: |
+          docker compose logs || true
+        working-directory: ethereum-contracts
+
       - name: Move cache
         run: |
           rm -rf /tmp/.buildx-cache
@@ -165,6 +176,8 @@ jobs:
           name: install-logs-${{ matrix.os }}
           path: /var/log/pantos
 
-
-     
-        
+      - name: Dump ethereum contract logs
+        if: always()
+        run: |
+          docker compose logs || true
+        working-directory: ethereum-contracts
