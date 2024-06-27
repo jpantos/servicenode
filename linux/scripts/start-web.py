@@ -62,9 +62,10 @@ if port < 1024:
             print(
                 'nft is not installed, unable to redirect the '
                 f'port to {port}; please reinstall the package '
-                'with the recommended dependencies', file=sys.stderr)
+                f'with the recommended dependencies. {error}', file=sys.stderr)
         else:
-            print(f'unable to redirect the port to {port}', file=sys.stderr, exc_info=True)
+            print(f'unable to redirect the port to {port}: {error}',
+                  file=sys.stderr)
     port = default_port
 
 # build the port command (along with the ssl certificate info if requested)
