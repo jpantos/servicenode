@@ -157,6 +157,13 @@ jobs:
           echo 'pantos-service-node-full pantos/common/reset_users boolean true' | sudo debconf-set-selections;
           echo 'pantos-service-node-full pantos/common/start_services boolean false' | sudo debconf-set-selections;
 
+      - name: Set env
+        run: |
+          sudo mkdir -p /etc/pantos
+          sudo chmod 777 /etc/pantos
+          sudo cp ./service-node-config.local.env /etc/pantos/service-node-config.env
+          sudo chmod 644 /etc/pantos/service-node-config.env
+
       - name: Install Debian package
         run: |
           sudo apt-get update
