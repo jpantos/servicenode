@@ -31,7 +31,6 @@ yapf = "0.40.2"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "3.7.1"
-types-requests = "^2.32.0.20240622"
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -55,6 +54,7 @@ semantic-version = "2.10.0"
 gunicorn = "^22.0.0"
 requests = "^2.32.3"
 flower = "^2.0.1"
+types-requests = "^2.32.0.20240622"
 
 [build-system]
 requires = ["poetry-core"]
