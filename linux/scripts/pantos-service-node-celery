@@ -37,7 +37,7 @@ while [ $# -gt 0 ]; do
       ;;
     -s|--status)
       echo "Querying the status of the celery worker"
-      exec ./bin/python -m celery -A pantos.servicenode inspect ping -d celery@$HOSTNAME
+      exec ./bin/python -m celery -A pantos.servicenode report 
       exit $?
       ;;
     *)
@@ -45,5 +45,10 @@ while [ $# -gt 0 ]; do
       ;;
   esac
 done
+
+if [ -n "$PANTOS_STATUS_MONITOR" ]; then
+    echo "Starting the status monitor"
+    exec ./bin/python -m celery -A pantos.servicenode flower &
+fi
 
 exec ./bin/python -m celery -A pantos.servicenode worker --uid $(id -u "$APP_NAME") --gid $(id -g "$APP_NAME") -l INFO -n pantos.servicenode -Q transfers,bids
