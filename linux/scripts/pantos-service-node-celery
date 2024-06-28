@@ -26,4 +26,24 @@ if [ -f "$PANTOS_ENV_FILE" ]; then
 fi
 
 cd "$APP_DIR"
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h|--help)
+      echo "Usage: $0 [-h|--help] [-s|--status]"
+      echo "-h, --help   Show this help message"
+      echo "-s, --status Start the celery worker with status monitoring"
+      exit 0
+      ;;
+    -s|--status)
+      echo "Querying the status of the celery worker"
+      exec ./bin/python -m celery -A pantos.servicenode inspect ping -d celery@$HOSTNAME
+      exit $?
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
 exec ./bin/python -m celery -A pantos.servicenode worker --uid $(id -u "$APP_NAME") --gid $(id -g "$APP_NAME") -l INFO -n pantos.servicenode -Q transfers,bids

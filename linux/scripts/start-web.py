@@ -20,10 +20,23 @@ NON_ROOT_DEFAULT_HTTP_PORT = 8080
 application_config = config['application']
 host = application_config['host']
 port = application_config['port']
+
 ssl_certificate = application_config.get('ssl_certificate')
 if ssl_certificate:
     ssl_private_key = application_config['ssl_private_key']
     print('SSL certificate found')
+
+# Check if we got the --status argument
+if '--status' in sys.argv:
+    print('Checking the status of the server...')
+    import requests
+    protocol = 'https' if ssl_certificate else 'http'
+    response = requests.get(f"{protocol}://{host}:{port}/health/live")
+    response.raise_for_status()
+    print('Server is running')
+    sys.exit(0)
+else:
+    print('Starting the server...')
 
 # apache2 should stop if already running
 completed_process = subprocess.run(
