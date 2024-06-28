@@ -167,15 +167,24 @@ jobs:
       - name: Install Debian package
         run: |
           sudo apt-get update
-          sudo apt-get install -y ./build/*.deb
+          sudo apt-get install -y ./build/*.deb curl
 
       # Check service is running
       - name: Check service is running
         run: |
-          sudo systemctl status pantos-service-node-server || true
-          sudo systemctl status pantos-service-node-celery || true
-          sudo journalctl -u pantos-service-node-server || true
-          sudo journalctl -u pantos-service-node-celery || true
+          # Wait for the service to start
+          timeout 120 while ! sudo systemctl is-active --quiet pantos-service-node-server; do
+            sleep 1
+          done
+          timeout 120 while ! sudo systemctl is-active --quiet pantos-service-node-celery; do
+            sleep 1
+          done
+          # Wait for curl to be positive
+          timeout 120 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8080/bids?source_blockchain=0&destination_blockchain=1)" != "200" ]]; do sleep 1; done'
+          sudo systemctl status pantos-service-node-server
+          sudo systemctl status pantos-service-node-celery
+          sudo journalctl -u pantos-service-node-server
+          sudo journalctl -u pantos-service-node-celery
 
       - name: Upload logs
         if: always()

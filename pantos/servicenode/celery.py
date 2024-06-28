@@ -13,6 +13,7 @@ from pantos.common.logging import initialize_logger
 
 from pantos.servicenode.application import initialize_application
 from pantos.servicenode.configuration import config
+from pantos.servicenode.database import get_engine
 from pantos.servicenode.plugins import initialize_plugins
 
 _TRANSFERS_QUEUE_NAME = 'transfers'
@@ -91,3 +92,19 @@ def setup_logger(logger: logging.Logger, *args, **kwargs):
     except Exception:
         logger.critical('unable to initialize logging', exc_info=True)
         sys.exit(1)
+
+
+# Source: https://stackoverflow.com/questions/43944787/sqlalchemy-celery-with-scoped-session-error/54751019#54751019 # noqa
+@celery.signals.worker_process_init.connect
+def prep_db_pool(**kwargs):
+    """
+        When Celery fork's the parent process, the db engine & connection pool is included in that.
+        But, the db connections should not be shared across processes, so we tell the engine
+        to dispose of all existing connections, which will cause new ones to be opend in the child
+        processes as needed.
+        More info: https://docs.sqlalchemy.org/en/latest/core/pooling.html#using-connection-pools-with-multiprocessing
+    """ # noqa
+    # The "with" here is for a flask app using Flask-SQLAlchemy.  If you don't
+    # have a flask app, just remove the "with" here and call .dispose()
+    # on your SQLAlchemy db engine.
+    get_engine().dispose()

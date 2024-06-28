@@ -38,16 +38,12 @@ if '--status' in sys.argv:
 else:
     print('Starting the server...')
 
-# apache2 should stop if already running
-completed_process = subprocess.run(
-    'systemctl list-units --type=service || true', check=True, text=True,
-    shell=True)  # nosec B602
-if 'apache2' in completed_process.stdout:
-    print('Stopping apache2...')
+try:
     subprocess.run('systemctl stop apache2', check=True, text=True,
                    shell=True)  # nosec B602
+    print('Stopping apache2...')
     apache = True
-else:
+except Exception:
     print('apache2 is not installed, using gunicorn...')
     apache = False
 
