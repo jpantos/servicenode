@@ -41,11 +41,11 @@ else:
 # apache2 should stop if already running
 completed_process = subprocess.run(
     'systemctl list-units --type=service || true', check=True, text=True,
-    shell=True, capture_output=True)  # nosec B602
+    shell=True)  # nosec B602
 if 'apache2' in completed_process.stdout:
     print('Stopping apache2...')
-    subprocess.run('systemctl stop apache2', check=True, text=True, shell=True,
-                   capture_output=True)  # nosec B602
+    subprocess.run('systemctl stop apache2', check=True, text=True,
+                   shell=True)  # nosec B602
     apache = True
 else:
     print('apache2 is not installed, using gunicorn...')
@@ -67,8 +67,8 @@ if port < 1024:
         f'Port {port} is a privileged port, redirecting to {default_port}...')
     try:
         completed_process = subprocess.run(port_redirect_command, text=True,
-                                           shell=True, check=True,
-                                           capture_output=True)  # nosec B602
+                                           shell=True,
+                                           check=True)  # nosec B602
         print(completed_process.stdout)
     except subprocess.CalledProcessError as error:
         if 'command not found' in error.stderr:
