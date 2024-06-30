@@ -173,18 +173,38 @@ jobs:
       - name: Check service is running
         run: |
           # Wait for the service to start
-          timeout 120 while ! sudo systemctl is-active --quiet pantos-service-node-server; do
+          while ! sudo systemctl is-active --quiet pantos-service-node-server; do
+            echo "Server is not running, retrying in 1 second."
             sleep 1
           done
-          timeout 120 while ! sudo systemctl is-active --quiet pantos-service-node-celery; do
+          echo "Server is running"
+          while ! sudo systemctl is-active --quiet pantos-service-node-celery; do
+            echo "Celery is not running, retrying in 1 second."
             sleep 1
           done
+          echo "Celery is running"
           # Wait for curl to be positive
-          timeout 120 bash -c 'while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:8080/bids?source_blockchain=0&destination_blockchain=1)" != "200" ]]; do sleep 1; done'
-          sudo systemctl status pantos-service-node-server
-          sudo systemctl status pantos-service-node-celery
-          sudo journalctl -u pantos-service-node-server
-          sudo journalctl -u pantos-service-node-celery
+          while true; do
+            response=$(curl -s -o /dev/null -w '%{http_code}' 'http://localhost:8080/bids?source_blockchain=0&destination_blockchain=1')
+            if [ "$response" -eq 200 ]; then
+              echo "Received 200 response, exiting."
+              break
+            else
+              echo "Did not receive 200 response, retrying in 1 second."
+              sleep 1
+            fi
+          done
+          echo "Service is up and running"
+
+      - name: Print logs
+        if: always()
+        run: |
+          sudo systemctl status pantos-service-node-server || true
+          sudo systemctl status pantos-service-node-celery || true
+          sudo journalctl -u pantos-service-node-server || true
+          sudo journalctl -u pantos-service-node-celery || true
+          # Print the contents of every file in /var/log/pantos
+          sudo find /var/log/pantos -type f -exec sudo cat {} \;
 
       - name: Upload logs
         if: always()
