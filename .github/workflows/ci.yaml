@@ -154,7 +154,6 @@ jobs:
           echo 'pantos-service-node-full pantos/service-node/signer_key_password string 1234' | sudo debconf-set-selections;
           echo 'pantos-service-node-full pantos/common/configure_postgresql boolean true' | sudo debconf-set-selections;
           echo 'pantos-service-node-full pantos/common/configure_rabbitmq boolean true' | sudo debconf-set-selections;
-          echo 'pantos-service-node-full pantos/common/reset_users boolean true' | sudo debconf-set-selections;
           echo 'pantos-service-node-full pantos/common/start_services boolean true' | sudo debconf-set-selections;
 
       - name: Set env
