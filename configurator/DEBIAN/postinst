@@ -209,7 +209,7 @@ _wait_for_postgresql() {
   fi
 }
 
-SERVICES="pantos-service-node-celery pantos-service-node-server"
+SERVICES="pantos-service-node-server pantos-service-node-celery"
 
 _stop_services() {
   systemctl stop $SERVICES
