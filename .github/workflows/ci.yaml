@@ -206,6 +206,7 @@ jobs:
           sudo find /var/log/pantos -type f -exec sudo cat {} \;
 
       - name: Fix permissions for upload
+        if: always()
         run: |
           sudo chmod -R 777 /var/log/pantos
           sudo chmod -R 777 /etc/pantos
