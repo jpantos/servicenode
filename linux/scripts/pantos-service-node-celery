@@ -21,9 +21,6 @@ source_if_not_set() {
 }
 
 source_if_not_set /etc/default/"$APP_NAME"
-if [ -f "$PANTOS_ENV_FILE" ]; then
-    source_if_not_set "$PANTOS_ENV_FILE"
-fi
 
 cd "$APP_DIR"
 

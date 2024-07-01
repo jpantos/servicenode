@@ -26,8 +26,7 @@ SDIST_DIR=debian/$(PACKAGE)-$(VERSION)
 export POETRY_VIRTUALENVS_PATH=debian/$(PACKAGE)$(DH_VIRTUALENV_INSTALL_ROOT)/$(PACKAGE)
 
 
-.PHONY: clean build-arch override_dh_virtualenv override_dh_strip
-	# override_dh_shlibdeps
+.PHONY: clean build-arch override_dh_virtualenv override_dh_strip override_dh_installsystemd
 
 clean:
 	test ! -d dist || rm -rf dist
@@ -41,7 +40,7 @@ build-arch:
 	dh $@ $(DH_VENV_ARGS) --sourcedir $(SDIST_DIR)
 
 %:
-	dh $@ --with python-virtualenv,sysuser
+	dh $@ --with python-virtualenv,systemd,sysuser
 
 override_dh_virtualenv:
 	. $$(conda info --base)/etc/profile.d/conda.sh && \
@@ -51,3 +50,6 @@ override_dh_virtualenv:
 
 override_dh_strip:
 	dh_strip --exclude=cffi --exclude=_imaging
+
+override_dh_installsystemd:
+    dh_installsystemd --no-start

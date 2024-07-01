@@ -104,7 +104,7 @@ _configure_postgresql() {
           echo "CELERY_BACKEND='db+postgresql://${postgresql_user}:${postgresql_password}@localhost/pantos-service-node-celery'" >> "${env_file}"
           echo "${DPKG_MAINTSCRIPT_PACKAGE} PostgreSQL user '${postgresql_user}' password updated"
         else
-          echo "${DPKG_MAINTSCRIPT_PACKAGE} PostgreSQL user does not exist, generating new PostgreSQL user and password"
+          echo "${DPKG_MAINTSCRIPT_PACKAGE} PostgreSQL user '${postgresql_user}' does not exist, generating user and password"
           postgresql_password=`< /dev/urandom tr -dc 'A-Za-z0-9' | fold -w 32 | head -n 1`
           su postgres -c "psql --quiet --command \"CREATE ROLE \\\"${postgresql_user}\\\" WITH LOGIN PASSWORD '${postgresql_password}'\""
           echo "DB_URL='postgresql://${postgresql_user}:${postgresql_password}@localhost/pantos-service-node'" >> "${env_file}"
