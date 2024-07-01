@@ -40,7 +40,7 @@ build-arch:
 	dh $@ $(DH_VENV_ARGS) --sourcedir $(SDIST_DIR)
 
 %:
-	dh $@ --with python-virtualenv,systemd,sysuser
+	dh $@ --with python-virtualenv,sysuser
 
 override_dh_virtualenv:
 	. $$(conda info --base)/etc/profile.d/conda.sh && \
@@ -52,4 +52,5 @@ override_dh_strip:
 	dh_strip --exclude=cffi --exclude=_imaging
 
 override_dh_installsystemd:
-	dh_installsystemd --no-start
+	dh_installsystemd --no-start --name=pantos-service-node-server
+	dh_installsystemd --no-start --name=pantos-service-node-celery
