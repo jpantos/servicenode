@@ -205,6 +205,11 @@ jobs:
           # Print the contents of every file in /var/log/pantos
           sudo find /var/log/pantos -type f -exec sudo cat {} \;
 
+      - name: Fix permissions for upload
+        run: |
+          sudo chmod -R 777 /var/log/pantos
+          sudo chmod -R 777 /etc/pantos
+
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
