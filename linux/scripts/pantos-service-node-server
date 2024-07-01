@@ -40,10 +40,4 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-# Check if Apache is installed
-if command -v apache2 >/dev/null 2>&1; then
-    echo "Apache is installed."
-    exec ./bin/pip install mod_wsgi
-fi
-
 exec ./bin/python ./bin/start-web.py $@

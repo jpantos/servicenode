@@ -38,15 +38,6 @@ if '--status' in sys.argv:
 else:
     print('Starting the server...')
 
-try:
-    subprocess.run('systemctl stop apache2', check=True, text=True,
-                   shell=True)  # nosec B602
-    print('Stopping apache2...')
-    apache = True
-except Exception:
-    print('apache2 is not installed, using gunicorn...')
-    apache = False
-
 print(f'Starting the server on {host}:{port}...')
 # the server should not run on a priviledged port (<1024)
 if port < 1024:
@@ -81,24 +72,12 @@ if port < 1024:
 gunicorn_command = (f"python -m gunicorn --bind {host}:{port} --workers 1 "
                     "pantos.servicenode.application:create_application()")
 if ssl_certificate:
-    server_name = re.sub(r'http.*?//|/.*', '', application_config['url'])
-    port_command = (
-        f'--https-port {port} --https-only --ssl-certificate-file '
-        f'{ssl_certificate} --ssl-certificate-key-file {ssl_private_key} '
-        f'--server-name {server_name}')
     gunicorn_command += (
         f" --certfile {ssl_certificate} --keyfile {ssl_private_key} ")
 else:
     port_command = f'--port {port}'
 
-core_command = ['runuser', '-u', USER_NAME, '--']
-
-if apache:
-    server_run_command = core_command + [
-        'mod_wsgi-express', 'start-server', '--host', host
-    ] + port_command.split() + [WSGI_FILE, '--log-to-terminal']
-else:
-    server_run_command = core_command + gunicorn_command.split()
+server_run_command = ['runuser', '-u', USER_NAME, '--'] + gunicorn_command.split()
 
 print(f'Starting the server with the command: {server_run_command}...')
 subprocess.run(server_run_command, check=True, text=True)
