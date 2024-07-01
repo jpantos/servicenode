@@ -92,10 +92,20 @@ else:
     port_command = f'--port {port}'
 
 core_command = ['runuser', '-u', USER_NAME, '--']
+
 if apache:
     server_run_command = core_command + [
         'mod_wsgi-express', 'start-server', '--host', host
     ] + port_command.split() + [WSGI_FILE, '--log-to-terminal']
+    # Check if mod_wsgi-express is installed, otherwise install it
+    try:
+        subprocess.run('mod_wsgi-express start-server --help', check=True,
+                       text=True, shell=True)  # nosec B602
+    except Exception:
+        print('mod_wsgi-express is not installed, installing it...')
+        subprocess.run('pip install mod_wsgi', check=True, text=True,
+                       shell=True)  # nosec B602
+        print('mod_wsgi-express installed')
 else:
     server_run_command = core_command + gunicorn_command.split()
 
