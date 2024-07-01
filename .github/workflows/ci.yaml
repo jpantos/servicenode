@@ -212,6 +212,13 @@ jobs:
           name: install-logs-${{ matrix.os }}
           path: /var/log/pantos
 
+      - name: Upload env config
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: env-config-${{ matrix.os }}
+          path: /etc/pantos
+
       - name: Dump ethereum contract logs
         if: always()
         run: |
